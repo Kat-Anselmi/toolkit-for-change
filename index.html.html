@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#5C2D91">
+<title>Toolkit for Change</title>
+<style>
+:root{
+  --ink:#1A0A2E; --ink2:#5A4A6E; --ink3:#9A8AB0;
+  --bg:#F7F4FF; --card:#FFFFFF; --border:#E8E0FF;
+  --w1:#0066CC; --w1l:#E6F0FF; --w1d:#004499;
+  --w2:#00884A; --w2l:#E6F7EE; --w2d:#005A32;
+  --w3:#7B2FBE; --w3l:#F5E8FF; --w3d:#4A1A8C;
+  --spark:#FF6B00; --sparkl:#FFF0E6;
+  --danger:#E5003C; --dangerl:#FFE6ED;
+  --gold:#FFB800; --goodl:#E8FFF4; --good:#00884A;
+  --r:20px; --r-sm:12px; --r-btn:50px;
+  --shadow:0 4px 20px rgba(92,45,145,.12);
+  --shadow-sm:0 2px 10px rgba(92,45,145,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.5;}
+#root{max-width:420px;margin:0 auto;height:100vh;display:flex;flex-direction:column;background:var(--bg);}
+.screen{display:flex;flex-direction:column;height:100%;}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.pad{padding:20px;}
+.pad-sm{padding:12px 20px;}
+
+/* Header */
+.hdr{background:var(--card);padding:14px 18px;display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--border);flex-shrink:0;}
+.hdr-back{background:none;border:2px solid var(--border);border-radius:var(--r-btn);cursor:pointer;font-size:16px;color:var(--ink);padding:6px 14px;font-weight:700;}
+.hdr-title{font-size:17px;font-weight:800;flex:1;color:var(--ink);}
+.hdr-badge{font-size:11px;font-weight:700;padding:4px 12px;border-radius:var(--r-btn);white-space:nowrap;text-transform:uppercase;letter-spacing:.4px;}
+
+/* Buttons */
+.btn{display:block;width:100%;padding:16px;border-radius:var(--r-btn);border:none;font-size:17px;font-weight:800;cursor:pointer;text-align:center;transition:transform .1s,opacity .1s;letter-spacing:.2px;}
+.btn:active{transform:scale(.97);}
+.btn-p{background:var(--w3);color:#fff;box-shadow:0 4px 16px rgba(123,47,190,.3);}
+.btn-s{background:var(--card);color:var(--w3);border:2px solid var(--w3);}
+.btn-spark{background:var(--spark);color:#fff;box-shadow:0 4px 16px rgba(255,107,0,.3);}
+.btn-sm{font-size:14px;padding:11px 20px;}
+
+/* Cards */
+.card{background:var(--card);border-radius:var(--r);padding:20px;margin-bottom:14px;box-shadow:var(--shadow-sm);border:1px solid var(--border);}
+
+/* Spark mascot bubble */
+.spark-bubble{background:var(--sparkl);border-radius:16px 16px 16px 4px;padding:14px 16px;margin-bottom:14px;border:2px solid var(--spark);display:flex;gap:12px;align-items:flex-start;}
+.spark-icon{font-size:28px;flex-shrink:0;line-height:1;}
+.spark-text{font-size:15px;line-height:1.5;color:var(--ink);}
+.spark-text strong{color:var(--spark);}
+
+/* Welcome hero */
+.hero{background:var(--w3);padding:48px 24px 36px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:rgba(255,255,255,.06);border-radius:50%;}
+.hero::after{content:'';position:absolute;bottom:-30px;left:-30px;width:120px;height:120px;background:rgba(255,255,255,.06);border-radius:50%;}
+.hero h1{font-size:28px;font-weight:900;color:#fff;margin-bottom:8px;line-height:1.2;position:relative;z-index:1;}
+.hero p{font-size:15px;color:rgba(255,255,255,.85);line-height:1.5;position:relative;z-index:1;}
+.hero-spark{font-size:64px;margin-bottom:12px;display:block;position:relative;z-index:1;}
+.hero-badge{display:inline-block;background:rgba(255,255,255,.2);color:#fff;font-size:12px;font-weight:700;padding:5px 14px;border-radius:var(--r-btn);margin-bottom:14px;position:relative;z-index:1;text-transform:uppercase;letter-spacing:.5px;}
+
+/* Onboarding */
+.ob-top{padding:20px;background:var(--card);border-bottom:2px solid var(--border);}
+.ob-prog{height:8px;background:var(--border);border-radius:8px;overflow:hidden;margin-bottom:16px;}
+.ob-fill{height:100%;background:linear-gradient(90deg,var(--spark),var(--w3));border-radius:8px;transition:width .4s;}
+.ob-step{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);margin-bottom:8px;}
+.ob-q{font-size:21px;font-weight:900;color:var(--ink);line-height:1.3;}
+.ob-sub{font-size:14px;color:var(--ink2);margin-top:4px;}
+
+.opt-card{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:all .15s;}
+.opt-card:active{transform:scale(.98);}
+.opt-card.sel{border-color:var(--w3);background:var(--w3l);}
+.opt-icon{font-size:28px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;background:var(--bg);border-radius:var(--r-sm);flex-shrink:0;}
+.opt-card.sel .opt-icon{background:var(--w3l);}
+.opt-label{font-size:15px;font-weight:600;line-height:1.3;color:var(--ink);}
+
+/* Country input */
+.geo-input{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:var(--r);font-size:16px;font-family:inherit;outline:none;background:var(--card);color:var(--ink);transition:border-color .15s;font-weight:600;}
+.geo-input:focus{border-color:var(--w3);}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.chip{padding:7px 14px;border-radius:var(--r-btn);border:2px solid var(--border);background:var(--card);font-size:13px;font-weight:600;cursor:pointer;color:var(--ink2);transition:all .15s;}
+.chip.sel{border-color:var(--w3);background:var(--w3l);color:var(--w3d);}
+.chip:active{transform:scale(.96);}
+
+/* Safety scale */
+.safety-scale{display:flex;flex-direction:column;gap:10px;}
+.safety-opt{border:2px solid var(--border);border-radius:var(--r);padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:all .15s;}
+.safety-opt:active{transform:scale(.98);}
+.safety-dot{width:20px;height:20px;border-radius:50%;flex-shrink:0;}
+.safety-opt-label{font-size:15px;font-weight:600;color:var(--ink);}
+.safety-opt-sub{font-size:13px;color:var(--ink2);margin-top:2px;}
+.safety-opt.sel{border-color:var(--ink);background:var(--bg);}
+
+/* Profile result */
+.profile-hero{padding:28px 20px;text-align:center;}
+.profile-icon{font-size:56px;margin-bottom:10px;}
+.profile-title{font-size:22px;font-weight:900;margin-bottom:8px;color:var(--ink);}
+.profile-msg{font-size:15px;color:var(--ink2);line-height:1.6;}
+.safety-warning{background:var(--dangerl);border:2px solid var(--danger);border-radius:var(--r);padding:14px 16px;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start;}
+.sw-icon{font-size:22px;flex-shrink:0;}
+.sw-text{font-size:14px;color:var(--ink);line-height:1.5;}
+
+/* World map */
+.world-header{background:var(--w3);padding:20px;color:#fff;}
+.world-header h2{font-size:22px;font-weight:900;margin-bottom:4px;}
+.world-header p{font-size:13px;opacity:.8;}
+.world-card{background:var(--card);border-radius:var(--r);margin-bottom:14px;overflow:hidden;box-shadow:var(--shadow-sm);border:2px solid var(--border);cursor:pointer;transition:transform .15s;}
+.world-card:active{transform:scale(.98);}
+.world-banner{padding:18px 18px 12px;display:flex;align-items:center;gap:14px;}
+.world-emoji{font-size:36px;}
+.world-info{flex:1;}
+.world-name{font-size:19px;font-weight:900;margin-bottom:2px;}
+.world-sub{font-size:13px;color:var(--ink2);}
+.world-footer{padding:10px 18px 14px;display:flex;align-items:center;justify-content:space-between;}
+.world-progress{display:flex;gap:5px;align-items:center;}
+.star{font-size:18px;}
+.world-cta{font-size:13px;font-weight:700;padding:7px 16px;border-radius:var(--r-btn);border:none;cursor:pointer;}
+
+/* Mission list */
+.world-top{padding:18px;color:#fff;}
+.world-top h2{font-size:20px;font-weight:900;margin-bottom:3px;}
+.world-top p{font-size:13px;opacity:.85;}
+.mission-card{background:var(--card);border-radius:var(--r);margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow-sm);border:2px solid var(--border);cursor:pointer;display:flex;align-items:stretch;transition:transform .15s;}
+.mission-card:active{transform:scale(.98);}
+.mission-left{width:64px;display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0;}
+.mission-body{flex:1;padding:14px 14px 14px 0;}
+.mission-num{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--ink3);margin-bottom:2px;}
+.mission-name{font-size:16px;font-weight:800;margin-bottom:3px;color:var(--ink);}
+.mission-sub{font-size:13px;color:var(--ink2);}
+.mission-star{padding:14px;display:flex;align-items:center;font-size:18px;}
+
+/* Mission detail */
+.mission-hero{padding:20px;color:#fff;}
+.mission-hero-icon{font-size:44px;margin-bottom:8px;}
+.mission-hero h2{font-size:20px;font-weight:900;margin-bottom:4px;}
+.mission-hero p{font-size:13px;opacity:.85;}
+
+/* Content cards */
+.vcard{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:10px;box-shadow:var(--shadow-sm);border-left:4px solid var(--danger);}
+.vcard-title{font-size:16px;font-weight:800;margin-bottom:4px;color:var(--ink);}
+.vcard-desc{font-size:14px;color:var(--ink2);line-height:1.5;}
+.power-card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:10px;box-shadow:var(--shadow-sm);border-left:4px solid var(--gold);}
+.power-title{font-size:15px;font-weight:800;margin-bottom:3px;color:var(--ink);}
+.power-law{font-size:12px;font-weight:700;color:var(--w3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px;}
+.power-desc{font-size:14px;color:var(--ink2);line-height:1.5;}
+.step-row{background:var(--card);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow-sm);display:flex;gap:14px;align-items:flex-start;}
+.step-bubble{width:32px;height:32px;border-radius:50%;background:var(--w3);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;flex-shrink:0;margin-top:1px;}
+.step-title{font-size:15px;font-weight:800;margin-bottom:3px;color:var(--ink);}
+.step-desc{font-size:14px;color:var(--ink2);line-height:1.5;}
+.warn-box{background:var(--dangerl);border-radius:var(--r);padding:14px 16px;margin-bottom:14px;border:2px solid var(--danger);display:flex;gap:10px;}
+.info-box{background:var(--w3l);border-radius:var(--r);padding:14px 16px;margin-top:10px;display:flex;gap:10px;}
+.ctx-box{background:#FFF8E1;border-radius:var(--r);padding:12px 14px;margin-bottom:12px;border:2px solid #F9A825;display:flex;gap:10px;font-size:14px;color:var(--ink2);line-height:1.5;}
+.dot-item{display:flex;gap:10px;padding:4px 0;font-size:14px;color:var(--ink2);line-height:1.4;}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px;}
+.from-to{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:10px;box-shadow:var(--shadow-sm);}
+.from-line{font-size:14px;color:var(--ink3);display:flex;gap:8px;margin-bottom:4px;}
+.arrow-down{text-align:center;font-size:20px;color:var(--w2);margin:2px 0;}
+.to-line{font-size:15px;font-weight:800;color:var(--w2d);display:flex;gap:8px;}
+.ally-card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:10px;box-shadow:var(--shadow-sm);}
+.ally-title{font-size:15px;font-weight:800;color:var(--w2d);margin-bottom:4px;}
+.ally-role{font-size:14px;color:var(--ink2);line-height:1.5;}
+.case-card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:10px;box-shadow:var(--shadow-sm);opacity:.75;}
+.diag-card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:10px;box-shadow:var(--shadow-sm);border-top:3px solid var(--w3);}
+.diag-q{font-size:15px;font-weight:800;color:var(--w3d);margin-bottom:8px;}
+.diag-look{font-size:13px;color:var(--ink2);line-height:1.4;margin-bottom:4px;}
+.fix-card{background:var(--card);border-radius:var(--r);padding:18px;margin-bottom:12px;box-shadow:var(--shadow-sm);}
+.fix-badge{display:inline-block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;padding:4px 12px;border-radius:var(--r-btn);color:#fff;margin-bottom:8px;}
+.fix-sub{font-size:13px;color:var(--ink2);font-style:italic;margin-bottom:8px;}
+.fix-act{font-size:15px;color:var(--ink);line-height:1.5;margin-bottom:8px;}
+.fix-who{font-size:13px;color:var(--ink2);}
+.ev-item{background:var(--card);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;display:flex;gap:12px;}
+.ev-name{font-size:13px;font-weight:800;color:var(--w3d);width:110px;flex-shrink:0;line-height:1.3;}
+.ev-desc{font-size:13px;color:var(--ink2);line-height:1.4;}
+.glos-item{border-bottom:1px solid var(--border);padding:12px 0;}
+.glos-item:last-child{border:none;}
+.glos-term{font-size:15px;font-weight:800;color:var(--ink);margin-bottom:3px;}
+.glos-def{font-size:14px;color:var(--ink2);line-height:1.5;}
+.tpl-item{background:var(--w3l);border-radius:var(--r);padding:14px;margin-bottom:10px;border-left:4px solid var(--w3);}
+.tpl-title{font-size:15px;font-weight:800;color:var(--w3d);margin-bottom:3px;}
+.tpl-desc{font-size:14px;color:var(--ink2);}
+.bad-list{background:var(--dangerl);border-radius:var(--r);padding:14px;margin-bottom:12px;}
+.good-list{background:var(--goodl);border-radius:var(--r);padding:14px;margin-bottom:12px;}
+.mini-item{display:flex;gap:8px;margin-bottom:7px;font-size:14px;color:var(--ink2);line-height:1.4;}
+.mini-item:last-child{margin-bottom:0;}
+.sec-label{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);margin:20px 0 10px;}
+
+/* Tools */
+.ttabs{display:flex;gap:8px;margin-bottom:18px;overflow-x:auto;padding-bottom:4px;}
+.ttab{padding:8px 16px;border-radius:var(--r-btn);border:2px solid var(--border);background:var(--card);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;color:var(--ink2);}
+.ttab.act{border-color:var(--w1);background:var(--w1l);color:var(--w1d);}
+.clitem{background:var(--card);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px;display:flex;gap:12px;cursor:pointer;border:2px solid var(--border);transition:all .15s;}
+.clitem.chk{background:var(--goodl);border-color:var(--good);}
+.chkbox{width:24px;height:24px;border:2px solid var(--border);border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;margin-top:1px;}
+.chk .chkbox{background:var(--good);border-color:var(--good);color:#fff;}
+.cltext{font-size:15px;line-height:1.4;font-weight:500;}
+.dt-node{background:var(--card);border-radius:var(--r);padding:22px;box-shadow:var(--shadow-sm);}
+.dt-q{font-size:18px;font-weight:800;margin-bottom:20px;line-height:1.3;text-align:center;color:var(--ink);}
+.dt-btns{display:flex;gap:10px;}
+.dt-btn{flex:1;padding:14px;border-radius:var(--r);border:2px solid;cursor:pointer;font-size:16px;font-weight:800;background:var(--card);transition:all .15s;}
+.dt-y{border-color:var(--good);color:var(--good);}
+.dt-y:active{background:var(--goodl);}
+.dt-n{border-color:var(--danger);color:var(--danger);}
+.dt-n:active{background:var(--dangerl);}
+.dt-ans{background:var(--card);border-radius:var(--r);padding:24px;text-align:center;box-shadow:var(--shadow-sm);border-top:4px solid var(--w1);}
+.dt-icon{font-size:40px;margin-bottom:12px;}
+.dt-text{font-size:15px;color:var(--ink2);line-height:1.6;margin-bottom:18px;}
+.script-card{background:var(--w1l);border-radius:var(--r);padding:18px;margin-bottom:12px;border-left:4px solid var(--w1);}
+.script-lbl{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--w1d);margin-bottom:8px;}
+.script-txt{font-size:16px;font-weight:700;color:var(--w1d);line-height:1.4;font-style:italic;}
+
+/* Plan builder */
+.plan-cta{background:var(--w3);border-radius:var(--r);padding:22px;text-align:center;margin-top:8px;}
+.plan-cta h3{font-size:18px;font-weight:900;color:#fff;margin-bottom:6px;}
+.plan-cta p{font-size:14px;color:rgba(255,255,255,.85);margin-bottom:16px;line-height:1.4;}
+.plan-cta button{background:#fff;color:var(--w3d);border:none;padding:12px 28px;border-radius:var(--r-btn);font-weight:900;cursor:pointer;font-size:16px;}
+.plan-ctx{background:var(--w3l);padding:10px 18px;border-bottom:2px solid var(--w3);flex-shrink:0;display:flex;align-items:center;gap:8px;}
+.plan-ctx span{font-size:13px;font-weight:700;color:var(--w3d);}
+.chat-user{display:flex;justify-content:flex-end;margin-bottom:12px;}
+.bubble-user{background:var(--w1);color:#fff;border-radius:20px 20px 4px 20px;padding:12px 16px;max-width:88%;font-size:15px;line-height:1.5;}
+.chat-spark{display:flex;gap:10px;margin-bottom:16px;align-items:flex-start;}
+.spark-av{width:34px;height:34px;border-radius:50%;background:var(--sparkl);border:2px solid var(--spark);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.bubble-spark{background:var(--card);border-radius:4px 20px 20px 20px;padding:14px 16px;box-shadow:var(--shadow-sm);flex:1;font-size:15px;line-height:1.6;border:1px solid var(--border);}
+.loading-dots{display:flex;gap:5px;align-items:center;padding:4px 0;}
+.dot-pulse{width:8px;height:8px;border-radius:50%;background:var(--spark);}
+.chat-input-bar{background:var(--card);border-top:2px solid var(--border);padding:10px 14px;display:flex;gap:8px;align-items:flex-end;flex-shrink:0;}
+.chat-ta{flex:1;padding:11px 14px;border:2px solid var(--border);border-radius:20px;font-size:15px;font-family:inherit;resize:none;outline:none;line-height:1.4;max-height:90px;overflow-y:auto;transition:border-color .15s;background:var(--bg);}
+.chat-ta:focus{border-color:var(--w3);}
+.send-btn{width:44px;height:44px;border-radius:50%;background:var(--w3);border:none;cursor:pointer;color:#fff;font-size:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(123,47,190,.3);}
+.starter-chip{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;cursor:pointer;font-size:14px;color:var(--ink2);line-height:1.4;transition:all .15s;}
+.starter-chip:active{background:var(--w3l);border-color:var(--w3);}
+
+.bottom-safe{height:28px;flex-shrink:0;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.fade{animation:fadeUp .2s ease;}
+@keyframes pulse{0%,100%{opacity:.2;transform:scale(.7);}50%{opacity:1;transform:scale(1.2);}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+// ── STATE ────────────────────────────────────────────────────────────────────
+const S={
+  screen:'welcome',step:0,answers:{},
+  profile:null,world:null,mission:null,
+  tool:'cl',checks:{},dtStep:'q1',
+  planHistory:{},planLoading:false,visited:{}
+};
+
+// ── DATA ─────────────────────────────────────────────────────────────────────
+const COUNTRIES=['Brazil','India','Indonesia','Kenya','Mexico','Nigeria','Philippines','South Africa','UK','USA'];
+const OB=[
+  {id:'reason',q:"What's happening in your life right now?",opts:[
+    {v:'myself',l:"I've been stopped, questioned, or detained",i:'🚨'},
+    {v:'support',l:"A friend or family member has — I want to help",i:'🤝'},
+    {v:'prepare',l:"Nothing yet — I want to know my rights",i:'📖'},
+    {v:'change',l:"I want to change how the system works",i:'✊'}
+  ]},
+  {id:'geo',q:"Where are you?",sub:"This helps us give you information specific to your country.",geo:true},
+  {id:'safety',q:"How free do you feel to speak up where you are?",safety:true},
+  {id:'urgency',q:"What do you need most right now?",opts:[
+    {v:'now',l:"Help right now — something is happening",i:'🔥'},
+    {v:'prepare',l:"I'm preparing — nothing has happened yet",i:'🛡️'},
+    {v:'support',l:"I'm helping someone else through this",i:'💙'},
+    {v:'change',l:"I'm here for the big picture — system change",i:'🌍'}
+  ]}
+];
+const WORLDS={
+  1:{name:"Me",sub:"Know your rights. Protect yourself.",emoji:"🙋",hex:"#0066CC",lhex:"#E6F0FF",missions:[1,2,3,4,5]},
+  2:{name:"Together",sub:"Help others. Build community.",emoji:"🤝",hex:"#00884A",lhex:"#E6F7EE",missions:[6,7,8]},
+  3:{name:"The System",sub:"Diagnose it. Challenge it. Change it.",emoji:"⚡",hex:"#7B2FBE",lhex:"#F5E8FF",missions:[9,10,11]}
+};
+const MISSIONS={
+  1:{w:1,emoji:'🚨',name:"Red Flags",sub:"Spot when things go wrong",
+     type:'violations',intro:"These are the signs that your rights are being violated. Know them. If any of these happen — that's a red flag.",
+     items:[
+       {t:"Stopped because of how you look",d:"Being stopped because of your race, religion, clothes, or neighbourhood — not because of anything you did. This is called discriminatory stop-and-search."},
+       {t:"Questioned with no lawyer there",d:"Being asked questions about an incident before a lawyer was offered. This should never happen."},
+       {t:"No one tells you why",d:"Being detained or questioned without being told the reason. You have the right to know."},
+       {t:"Hurt, threatened, or humiliated",d:"Any officer who hurts you, threatens you, or speaks to you in a degrading way is violating your rights. No exceptions."},
+       {t:"Age not checked first",d:"If there's any doubt you're under 18, they must treat you as a child. Always."},
+       {t:"Held for no real reason",d:"Being detained without a clear justification or for longer than necessary."}
+     ],note:"If any of this happens — write it down as soon as you're safe. Time, place, names, exactly what was said."},
+  2:{w:1,emoji:'⭐',name:"Your Powers",sub:"These rights belong to you",
+     type:'rights',intro:"These are your rights at first contact. They exist whether or not the officer knows them. You do now.",
+     items:[
+       {r:"Right to know why you were stopped",l:"Article 40, CRC",d:"They must tell you clearly. You can ask. They must answer."},
+       {r:"Right to a free lawyer — before any questions",l:"Articles 37(d) & 40, CRC",d:"Before they ask you anything, you get a lawyer. If you can't afford one, the state must provide one for free. This is called free legal aid."},
+       {r:"Right to have a trusted adult present",l:"Article 40, CRC",d:"A parent, guardian, or trusted adult must be told immediately. If they're not available, a child advocate should be there instead."},
+       {r:"Right to stay silent",l:"Article 40, CRC",d:"You don't have to answer questions until a lawyer and trusted adult are present. You can say: 'I won't answer questions without a lawyer.'"},
+       {r:"Right to dignity — no cruel treatment. Ever.",l:"Article 37(a), CRC",d:"No officer can hurt you, threaten you, or speak to you in a humiliating way. This is non-negotiable."},
+       {r:"Detention is a last resort — not a first move",l:"Article 37(b), CRC",d:"Being locked up (deprivation of liberty) can only happen if there's no other safe option. And only for as short a time as possible."},
+       {r:"They must check if you can avoid court",l:"Article 40(3), CRC",d:"Before any formal charges, the system must check if your case can be handled without going to court. This is called diversion screening."}
+     ]},
+  3:{w:1,emoji:'📋',name:"The Rulebook",sub:"How it's supposed to go",
+     type:'steps',intro:"This is what should happen every time a young person first meets the justice system. If it doesn't happen this way — something is wrong.",
+     items:[
+       {n:1,t:"Check your age first",d:"Before anything. No questions, no detention, no charges until your age is confirmed."},
+       {n:2,t:"Tell you why",d:"Immediately. Before any questioning."},
+       {n:3,t:"Get you a lawyer",d:"Offer a lawyer before anyone asks you anything."},
+       {n:4,t:"Call a trusted adult",d:"Right away. Before questioning begins."},
+       {n:5,t:"Check you're okay",d:"Are you safe? Do you have any immediate needs? Have you experienced violence or trauma?"},
+       {n:6,t:"Check if you can avoid court",d:"Before any charges, the system must assess whether diversion is an option."},
+       {n:7,t:"Write everything down",d:"All decisions, who was there, what you were told, what options were offered. You can ask for a copy."}
+     ]},
+  4:{w:1,emoji:'🛡️',name:"Stay Safe",sub:"What to do — and what not to do",
+     type:'safety',intro:"Being stopped is stressful. Here's what to do to protect yourself without making things worse.",
+     warning:"⚠️ Your physical safety comes first. If you're in danger — prioritise getting safe above everything else.",
+     secs:[
+       {t:"While it's happening",items:[
+         "Stay calm. Don't run, argue, or resist — even if you know this is wrong.",
+         "Say: 'I want a lawyer and I want my parent or guardian contacted before any questioning.'",
+         "You don't have to answer questions. Say: 'I won't answer until I have a lawyer.'",
+         "If you're being hurt: 'I do not consent to this treatment.'",
+         "Try to remember: officer name or number, time, location."
+       ]},
+       {t:"As soon as you're safe",items:[
+         "Write everything down immediately — memory fades fast.",
+         "What happened. In order. What was said. Who was there.",
+         "Keep it somewhere safe."
+       ]},
+       {t:"About your digital safety",items:[
+         "Don't post about it online until you've talked to a lawyer.",
+         "Calls may be recorded — be careful what you say on the phone.",
+         "Use an encrypted messaging app (like Signal) if sharing with an advocate."
+       ]}
+     ]},
+  5:{w:1,emoji:'🔧',name:"Your Toolkit",sub:"Tools you can use right now",
+     type:'tools',intro:"These tools are built for the moment — use them during or straight after first contact."},
+  6:{w:2,emoji:'🌱',name:"The Vision",sub:"What we're working toward",
+     type:'framing',intro:"Before you advocate for change, you need to know what you're asking for. Here's the vision.",
+     items:[
+       {f:"First contact that escalates and criminalises",t:"First contact that protects and redirects"},
+       {f:"Young people who don't know their rights",t:"Young people who can name a violation on the spot"},
+       {f:"First contact as the start of a criminal record",t:"First contact as the start of a pathway to support"},
+       {f:"Police acting alone with no accountability",t:"Multi-agency responses with community oversight"}
+     ]},
+  7:{w:2,emoji:'🤝',name:"Your Crew",sub:"Find your allies",
+     type:'partners',intro:"You don't have to do this alone. These are the people who can help — you or whoever you're supporting.",
+     tip:"💡 Use the community asset map in Your Evidence Kit (Mission 11) to find these people near you.",
+     items:[
+       {t:"Public defenders & legal aid",r:"Free lawyers. Can come to a police station. Must be there before questioning."},
+       {t:"Child & social welfare services",r:"Assess your needs. Can be a trusted adult. Can refer you to support services."},
+       {t:"Youth organisations",r:"Peer support, rights info, and advocacy. Some have been through the system too."},
+       {t:"School & community liaisons",r:"Can contact your family. Can speak up for you to authorities."},
+       {t:"Police oversight bodies",r:"Where you report misconduct. They investigate complaints about police."},
+       {t:"Community elders & trusted adults",r:"Support, company, and advocacy."}
+     ]},
+  8:{w:2,emoji:'📖',name:"True Stories",sub:"Real-life examples from young people",
+     type:'cases',intro:"These short accounts show what violations look like in practice — and what young people have done about them. Full stories will be added as the toolkit grows.",
+     items:[
+       {country:"Coming soon",t:"Discriminatory stop-and-search",p:"A case showing how this was challenged and what changed."},
+       {country:"Coming soon",t:"Invoking the right to a lawyer",p:"A young person who successfully asserted their rights — and what happened next."},
+       {country:"Coming soon",t:"First contact done right",p:"A comparative example showing how a different country handles this moment."}
+     ]},
+  9:{w:3,emoji:'🔍',name:"Investigate",sub:"Map the system where you are",
+     type:'diagnosis',intro:"Before you can change anything, you need to understand what currently exists — and what's missing — in your specific context.",
+     qs:[
+       {q:"Is there a law requiring a lawyer before police question a young person?",look:"A national law or rule saying young people get legal representation before any police questioning.",ifnot:"This is a gap you can name and campaign to close."},
+       {q:"Is there a written procedure for police when they first meet a young person?",look:"A published 'Standard Operating Procedure' (SOP) — written steps police must follow.",ifnot:"Advocate for one to be created and published."},
+       {q:"Must police check your age before questioning or detaining you?",look:"A written rule requiring age verification before any questioning.",ifnot:"Push for this. It's a basic safeguard."},
+       {q:"Must diversion be assessed before any charges are filed?",look:"A requirement to check if the case can avoid court before charges are registered.",ifnot:"This is one of the most important gaps to close."}
+     ],
+     gaps:["No child-specific intake process at police stations","No legal requirement for a lawyer before questioning","No automatic diversion check before charges","No published data on how many young people are stopped"],
+     progress:["Police must verify age in writing before questioning","24/7 legal support available at police stations","Data on first-contact outcomes is published","Young people report being told their rights at first contact"]},
+  10:{w:3,emoji:'⚖️',name:"Change the Game",sub:"How to push for real change",
+      type:'levers',intro:"Once you know what's broken, here's how to think about fixing it. Three types of fix — different targets, different tactics.",
+      warn:"⚠️ These are types of change — not a ranking by difficulty. In some places, a procedural fix is easy. In others, it's the most dangerous thing on this list. Know your context.",
+      ctx:"🌍 Some of these actions assume a democratic system. If that's not your reality, start with international organisations and civil society groups listed in Your Evidence Kit.",
+      fixes:[
+        {type:"Procedural fix",cls:"#0066CC",sub:"Get the system to follow rules that already exist",
+         act:"Push for a written police procedure that requires age checks, lawyer access, and guardian notification before any questioning.",
+         note:"This sometimes doesn't need a law change — just pressure on a police chief.",who:"Local or national police leadership; city or regional government."},
+        {type:"Structural fix",cls:"#00884A",sub:"Change how the system is organised and resourced",
+         act:"Campaign for a law making it illegal to question a young person without legal representation. And 24/7 legal support at all police stations.",
+         who:"Ministry of justice; lawmakers on justice or children's rights committees."},
+        {type:"Legal fix",cls:"#7B2FBE",sub:"Change the law so rights are permanently guaranteed",
+         act:"Push for trained community workers — not police — to be first responders for young people in non-violent situations.",
+         who:"National police leadership; ministry of justice; lawmakers; international bodies if national routes are blocked."}
+      ]},
+  11:{w:3,emoji:'💼',name:"Your Evidence Kit",sub:"Build your case",
+      type:'evidence',intro:"Your reference library for advocacy. Use this to build a legally grounded argument — so your case is more than an opinion.",
+      stds:[
+        {n:"CRC Article 37",d:"No cruel treatment. Detention is a last resort. Period."},
+        {n:"CRC Article 40",d:"Rights in conflict with the law — lawyer, silence, diversion."},
+        {n:"Beijing Rules 7–11",d:"International rules for how police must handle young people at first contact."},
+        {n:"General Comment 24 (2019)",d:"The UN's most up-to-date guidance on children in the justice system."}
+      ],
+      glos:[
+        {t:"First contact",d:"The very first meeting between a young person and a justice system official."},
+        {t:"Pre-trial detention",d:"Being held before a trial. Different from being sentenced."},
+        {t:"Diversion screening",d:"A check — before charges — to see if the case can avoid court."},
+        {t:"Duty lawyer",d:"A lawyer on call at police stations or courts — free of charge."},
+        {t:"SOP (Standard Operating Procedure)",d:"A written rulebook telling officers exactly what steps to follow."},
+        {t:"Free legal aid",d:"A free lawyer provided by the state when you can't afford one."},
+        {t:"Legal mandate",d:"Something the law requires — not just suggests."}
+      ],
+      tpls:[
+        {t:"Freedom of information request",d:"Ask your local authorities how many young people are detained before their cases are reviewed."},
+        {t:"Incident documentation form",d:"Write down exactly what happened — structured, timestamped, ready to use."},
+        {t:"Complaint letter",d:"Report a rights violation to a police oversight body or human rights institution."}
+      ]}
+};
+const CL_ITEMS=["Age confirmed?","Told why you were stopped?","Lawyer contacted and offered before any questions?","Parent, guardian, or trusted adult notified?","Someone checked you're okay and safe?","Diversion mentioned and assessed?","Treated with dignity — no force, threats, or humiliation?","Everything being documented? Can you get a copy?","Told what happens next?"];
+const SCRIPTS=[
+  {l:"To get a lawyer",t:"I want a lawyer and I want my parent or guardian contacted before any questioning."},
+  {l:"To stay silent",t:"I won't answer questions about this until I have a lawyer present."},
+  {l:"If you're being hurt",t:"I do not consent to this treatment."},
+  {l:"To ask about diversion",t:"Has diversion been considered in my case? What options are there?"}
+];
+const DT={q1:{q:"Are you physically safe right now?",y:'q2',n:'as'},q2:{q:"Do you have a lawyer and trusted adult present?",y:'q3',n:'al'},q3:{q:"Has diversion been mentioned?",y:'q4',n:'ad'},q4:{q:"Do you want to report what happened?",y:'ar',n:'adone'}};
+const DTA={as:{i:'🛡️',t:"Safety first. If you're being hurt, say: 'I do not consent to this treatment.' Get safe first — then document everything.",btn:'Start again',nx:'q1'},al:{i:'⚖️',t:"Say clearly: 'I want a lawyer and I want my parent or guardian contacted before any questioning.' Don't answer questions until they're there.",btn:'Continue',nx:'q3'},ad:{i:'🔀',t:"Ask: 'Has diversion been considered in my case?' You don't have to accept the first answer.",btn:'Continue',nx:'q4'},ar:{i:'📝',t:"Document everything — times, names, what happened, what was said. Get a lawyer or trusted adult to help you file a formal complaint.",btn:'Back to start',nx:'q1'},adone:{i:'✅',t:"You're done for now. Keep your notes safe. Talk to a trusted adult or lawyer if you have concerns.",btn:'Back to start',nx:'q1'}};
+const PLAN_STARTERS={1:["I was stopped and questioned without a lawyer being there.","My friend was searched because of how they look.","I want to recognise violations if they happen to me."],2:["I was detained and I'm not sure what rights I had.","I want to know exactly what I'm entitled to if I'm stopped.","My sibling was questioned — help me understand their rights."],3:["Police didn't check my age or offer a lawyer when they stopped me.","What should have happened when my friend was detained?","I'm preparing — what should I expect if I'm ever stopped?"],4:["I was in a tense encounter and didn't know what to say.","I want a personal plan for if I'm stopped by police.","I want to help a young person who's scared."],5:["I need help using the checklist for something that happened.","Walk me through the decision tree for my situation.","Which tool should I use first?"],6:["I want to help change how police treat young people in my area.","What would fair first contact look like where I live?","I want to start advocating for better practices."],7:["I need to find someone who can help me through this.","I don't know who to contact — where do I start?","I want to build a support network."],8:["I want to share my story safely.","Has what happened to me happened to others? What did they do?","How do I document my experience?"],9:["I want to investigate what procedures exist in my country.","What written rules exist for first contact where I am?","I'm researching youth justice in my region — where do I start?"],10:["I want to campaign for better first contact procedures.","What change is realistic where I am?","I want to build a campaign — where do I start?"],11:["I need help gathering evidence for a complaint.","I want to make a legally grounded argument for why something was wrong.","Help me adapt the templates to my situation."]};
+
+// ── PROFILE ──────────────────────────────────────────────────────────────────
+function buildProfile(a){
+  if(a.urgency==='now')return{i:'🚨',title:"Let's focus on right now",msg:"Something is happening. Start with World 1 — it has the tools you need immediately.",rec:1,safe:a.safety==='risk'||a.safety==='care'};
+  if(a.safety==='risk')return{i:'🔴',title:"Your safety comes first",msg:"Some actions in this toolkit may not be safe in your context. Start with World 1 — understanding your rights — and stick to private, safe actions for now.",rec:1,safe:true};
+  if(a.reason==='change'&&(a.safety==='very'||a.safety==='some'))return{i:'✊',title:"Ready to drive change",msg:"You're here to make a difference. Start with World 1 to ground yourself, then move to World 3 where the system-change tools live.",rec:1,safe:false};
+  if(a.reason==='support')return{i:'💙',title:"Let's help you support someone",msg:"World 1 explains what should have happened and what rights apply. World 2 has tools built specifically for supporting others.",rec:1,safe:false};
+  return{i:'📖',title:"Great starting point",msg:"Start with World 1 to understand your rights. Worlds 2 and 3 will take you further when you're ready.",rec:1,safe:false};
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+const R=document.getElementById('root');
+function rdr(h){R.innerHTML=h;R.firstElementChild&&R.firstElementChild.classList.add('fade');window.scrollTo(0,0);}
+
+function worldColor(w){return WORLDS[w].hex;}
+function worldLight(w){return WORLDS[w].lhex;}
+
+// ── SCREENS ───────────────────────────────────────────────────────────────────
+function showWelcome(){
+  rdr(`<div class="screen">
+    <div class="scroll">
+      <div class="hero">
+        <span class="hero-spark">⚡</span>
+        <div class="hero-badge">Module 1 · First Contact</div>
+        <h1>Toolkit for Change</h1>
+        <p>Hey! I'm Spark. Your guide to understanding your rights — and changing the justice system.</p>
+      </div>
+      <div class="pad">
+        <div class="spark-bubble">
+          <span class="spark-icon">⚡</span>
+          <div class="spark-text">This toolkit works on <strong>three levels</strong> — protecting yourself, helping others, and changing the system. Let's find out where to start for you.</div>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:14px;">
+          ${[{e:'🙋',n:'Me',c:'#E6F0FF',t:'#0066CC'},{e:'🤝',n:'Together',c:'#E6F7EE',t:'#00884A'},{e:'⚡',n:'The System',c:'#F5E8FF',t:'#7B2FBE'}].map(w=>`
+            <div style="flex:1;background:${w.c};border-radius:var(--r);padding:12px;text-align:center;">
+              <div style="font-size:24px;margin-bottom:4px;">${w.e}</div>
+              <div style="font-size:13px;font-weight:800;color:${w.t};">${w.n}</div>
+            </div>`).join('')}
+        </div>
+        <div class="card" style="background:var(--dangerl);border:2px solid var(--danger);">
+          <div style="font-size:14px;font-weight:800;color:var(--danger);margin-bottom:5px;">⚠️ A word of caution</div>
+          <p style="font-size:14px;color:var(--ink2);line-height:1.5;">Not every action in this toolkit is safe everywhere. We'll ask you 4 quick questions to guide you to the right content for your situation.</p>
+        </div>
+        <button class="btn btn-spark" onclick="go('ob')">Let's go! →</button>
+        <div style="height:10px;"></div>
+        <button class="btn btn-s" onclick="go('worlds')">Skip — explore freely</button>
+      </div>
+      <div class="bottom-safe"></div>
+    </div>
+  </div>`);
+}
+
+function showOB(){
+  const q=OB[S.step];
+  const prog=((S.step+1)/OB.length)*100;
+  const sel=S.answers[q.id];
+  let body='';
+  if(q.geo){
+    const c=S.answers.country||'';
+    const city=S.answers.city||'';
+    body=`
+      <div style="margin-bottom:8px;font-size:13px;font-weight:700;color:var(--ink2);">Country</div>
+      <input class="geo-input" id="country-in" placeholder="e.g. Nigeria, Brazil, Germany..." value="${c}" oninput="S.answers.country=this.value">
+      <div class="chip-row" id="chips">
+        ${COUNTRIES.map(cn=>`<div class="chip${c===cn?' sel':''}" onclick="pickCountry('${cn}')">${cn}</div>`).join('')}
+      </div>
+      <div style="margin:14px 0 8px;font-size:13px;font-weight:700;color:var(--ink2);">City or region <span style="font-weight:500;color:var(--ink3)">(optional)</span></div>
+      <input class="geo-input" id="city-in" placeholder="e.g. Lagos, São Paulo, London..." value="${city}" oninput="S.answers.city=this.value">
+      ${(c||city)?`<div style="height:14px;"></div><button class="btn btn-spark" onclick="obNext()">Next →</button>`:''}`;
+  } else if(q.safety){
+    const s=sel;
+    body=`<div class="safety-scale">
+      ${[{v:'very',e:'🟢',l:"Very free",sub:"I can speak up and act openly",c:'#00884A'},{v:'some',e:'🟡',l:"A bit careful",sub:"I can act but I need to think first",c:'#F9A825'},{v:'care',e:'🟠',l:"Pretty cautious",sub:"Speaking up could have consequences",c:'#E65100'},{v:'risk',e:'🔴',l:"Not safe",sub:"It could put me at real risk",c:'#E5003C'}].map(o=>`
+        <div class="safety-opt${s===o.v?' sel':''}" onclick="pick('safety','${o.v}')" style="${s===o.v?`border-color:${o.c};background:${o.c}12`:''}" >
+          <div class="safety-dot" style="background:${o.c}"></div>
+          <div><div class="safety-opt-label">${o.e} ${o.l}</div><div class="safety-opt-sub">${o.sub}</div></div>
+        </div>`).join('')}
+    </div>
+    ${s?`<div style="height:14px;"></div><button class="btn btn-spark" onclick="obNext()">Next →</button>`:''}`;
+  } else {
+    body=`${q.opts.map(o=>`
+      <div class="opt-card${sel===o.v?' sel':''}" onclick="pick('${q.id}','${o.v}')">
+        <div class="opt-icon">${o.i}</div>
+        <div class="opt-label">${o.l}</div>
+      </div>`).join('')}
+    ${sel?`<div style="height:4px;"></div><button class="btn btn-spark" onclick="obNext()">Next →</button>`:''}`;
+  }
+  rdr(`<div class="screen">
+    <div class="ob-top">
+      <div class="ob-step">Step ${S.step+1} of ${OB.length}</div>
+      <div class="ob-prog"><div class="ob-fill" style="width:${prog}%"></div></div>
+      <div class="ob-q">${q.q}</div>
+      ${q.sub?`<div class="ob-sub">${q.sub}</div>`:''}
+    </div>
+    <div class="scroll">
+      <div class="pad">${body}</div>
+      <div class="bottom-safe"></div>
+    </div>
+  </div>`);
+}
+
+function showProfile(){
+  const p=S.profile;
+  const loc=[S.answers.country,S.answers.city].filter(Boolean).join(', ');
+  rdr(`<div class="screen">
+    <div class="scroll">
+      <div class="profile-hero">
+        <div class="profile-icon">${p.i}</div>
+        <div class="profile-title">${p.title}</div>
+        <div class="profile-msg">${p.msg}</div>
+      </div>
+      <div class="pad">
+        ${loc?`<div class="spark-bubble"><span class="spark-icon">📍</span><div class="spark-text">Got it — you're in <strong>${loc}</strong>. I'll use this to tailor your action plans to your local context.</div></div>`:''}
+        ${p.safe?`<div class="safety-warning"><div class="sw-icon">⚠️</div><div class="sw-text"><strong>Safety note:</strong> Based on what you told me, some actions in this toolkit — especially in World 3 — may not be safe for you. I'll flag this as we go. Your safety comes first.</div></div>`:''}
+        <button class="btn btn-spark" onclick="go('worlds')">Start my journey →</button>
+        <div style="height:10px;"></div>
+        <button class="btn btn-s" onclick="go('ob')">↺ Redo questionnaire</button>
+      </div>
+      <div class="bottom-safe"></div>
+    </div>
+  </div>`);
+}
+
+function showWorlds(){
+  const rec=S.profile?S.profile.rec:null;
+  rdr(`<div class="screen">
+    <div style="background:var(--w3);padding:20px 18px 16px;">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.7);margin-bottom:4px;">Level 1 · First Contact</div>
+      <div style="font-size:22px;font-weight:900;color:#fff;">Your Journey</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.8);margin-top:3px;">Choose a world to explore</div>
+    </div>
+    <div class="scroll">
+      <div class="pad">
+        ${S.profile?`<div class="spark-bubble"><span class="spark-icon">⚡</span><div class="spark-text">Start with <strong>World ${rec}</strong> — ${WORLDS[rec].name}. That's where you need to be right now.</div></div>`:''}
+        ${[1,2,3].map(n=>{
+          const w=WORLDS[n];
+          const done=w.missions.filter(m=>S.visited[m]).length;
+          const stars='⭐'.repeat(done)+'☆'.repeat(w.missions.length-done);
+          const isRec=rec===n;
+          return `<div class="world-card" onclick="go('world',${n})" style="${isRec?`border-color:${w.hex};`:''}">
+            <div class="world-banner" style="background:${w.lhex}">
+              <span class="world-emoji">${w.emoji}</span>
+              <div class="world-info">
+                ${isRec?`<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:${w.hex};margin-bottom:3px;">⭐ Start here</div>`:''}
+                <div class="world-name" style="color:${w.hex}">World ${n}: ${w.name}</div>
+                <div class="world-sub">${w.sub}</div>
+              </div>
+            </div>
+            <div class="world-footer">
+              <div style="font-size:14px;color:var(--ink3);">${stars} ${done}/${w.missions.length} missions</div>
+              <button class="world-cta" style="background:${w.hex};color:#fff;">Explore →</button>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="bottom-safe"></div>
+    </div>
+  </div>`);
+}
+
+function showWorld(n){
+  const w=WORLDS[n];
+  rdr(`<div class="screen">
+    <div class="hdr">
+      <button class="hdr-back" onclick="go('worlds')">← Worlds</button>
+      <div class="hdr-title">World ${n}: ${w.name}</div>
+    </div>
+    <div class="world-top" style="background:${w.hex}">
+      <h2>${w.emoji} ${w.sub}</h2>
+    </div>
+    <div class="scroll">
+      <div class="pad">
+        ${w.missions.map(mn=>{
+          const m=MISSIONS[mn];
+          const done=S.visited[mn];
+          return `<div class="mission-card" onclick="go('mission',${mn})" style="${done?`border-color:${w.hex}`:''}" >
+            <div class="mission-left" style="background:${w.lhex}">${m.emoji}</div>
+            <div class="mission-body">
+              <div class="mission-num">Mission ${mn}</div>
+              <div class="mission-name">${m.name}</div>
+              <div class="mission-sub">${m.sub}</div>
+            </div>
+            <div class="mission-star">${done?'⭐':'☆'}</div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="bottom-safe"></div>
+    </div>
+  </div>`);
+}
+
+function showMission(n){
+  const m=MISSIONS[n];
+  const w=WORLDS[m.w];
+  S.visited[n]=true;
+  const hasPlan=S.planHistory[n]&&S.planHistory[n].length>0;
+  rdr(`<div class="screen">
+    <div class="hdr">
+      <button class="hdr-back" onclick="go('world',${m.w})">← ${w.name}</button>
+      <div class="hdr-title">${m.name}</div>
+      <div class="hdr-badge" style="background:${w.lhex};color:${w.hex}">M${n}</div>
+    </div>
+    <div class="mission-hero" style="background:${w.hex}">
+      <div class="mission-hero-icon">${m.emoji}</div>
+      <h2>${m.name}</h2>
+      <p>${m.sub}</p>
+    </div>
+    <div class="scroll">
+      <div class="pad">
+        ${missionBody(m,n,w)}
+        <div class="plan-cta">
+          <h3>${hasPlan?'📋 Continue your plan':'✨ Build your action plan'}</h3>
+          <p>${hasPlan?'You have a plan in progress — continue where you left off.':'Get step-by-step guidance for your specific situation.'}</p>
+          <button onclick="go('plan',${n})">${hasPlan?'Continue →':'Build my plan →'}</button>
+        </div>
+      </div>
+      <div class="bottom-safe"></div>
+    </div>
+  </div>`);
+}
+
+function missionBody(m,n,w){
+  if(m.type==='violations')return`
+    <div class="spark-bubble"><span class="spark-icon">⚡</span><div class="spark-text">${m.intro}</div></div>
+    ${m.items.map(i=>`<div class="vcard"><div class="vcard-title">🚩 ${i.t}</div><div class="vcard-desc">${i.d}</div></div>`).join('')}
+    <div class="info-box"><span>📝</span><span style="font-size:14px;color:var(--ink2);line-height:1.5;">${m.note}</span></div>`;
+  if(m.type==='rights')return`
+    <div class="spark-bubble"><span class="spark-icon">⚡</span><div class="spark-text">${m.intro}</div></div>
+    ${m.items.map(i=>`<div class="power-card"><div class="power-title">⭐ ${i.r}</div><div class="power-law">${i.l}</div><div class="power-desc">${i.d}</div></div>`).join('')}`;
+  if(m.type==='steps')return`
+    <div class="spark-bubble"><span class="spark-icon">⚡</span><div class="spark-text">${m.intro}</div></div>
+    ${m.items.map(i=>`<div class="step-row"><div class="step-bubble">${i.n}</div><div><div class="step-title">${i.t}</div><div class="step-desc">${i.d}</div></div></div>`).join('')}`;
+  if(m.type==='safety')return`
+    <div class="warn-box"><span>⚠️</span><span style="font-size:14px;line-height:1.5;">${m.warning}</span></div>
+    <div class="spark-bubble"><span class="spark-icon">⚡</span><div class="spark-text">${m.intro}</div></div>
+    ${m.secs.map(s=>`<div style="margin-bottom:16px;"><div style="font-size:15px;font-weight:800;margin-bottom:8px;">${s.t}</div>${s.items.map(i=>`<div class="dot-item"><div class="dot" style="background:var(--w1)"></div><span>${i}</span></div>`).join('')}</div>`).join('')}`;
+  if(m.type==='tools')return toolsBody(m);
+  if(m.type==='framing')return`
+    <div class="spark-bubble"><span class="spark-icon">⚡</span><div class="spark-text">${m.intro}</div></div>
+    ${m.items.map(i=>`<div class="from-to"><div class="from-line"><span>✗</span><span>${i.f}</span></div><div class="arrow-down">↓</div><div class="to-line"><span style="color:var(--good)">✓</span><span>${i.t}</span></div></div>`).join('')}`;
+  if(m.type==='partners')return`
+    <div class="spark-bubble"><span class="spark-icon">⚡</span><div class="spark-text">${m.intro}</div></div>
+    ${m.items.map(i=>`<div class="ally-card"><div class="ally-title">🤝 ${i.t}</div><div class="ally-role">${i.r}</div></div>`).join('')}
+    <div class="info-box"><span>💡</span><span style="font-size:14px;color:var(--ink2);line-height:1.5;">${m.tip}</span></div>`;
+  if(m.type==='cases')return`
+    <div class="spark-bubble"><span class="spark-icon">⚡</span><div class="spark-text">${m.intro}</div></div>
+    ${m.items.map(i=>`<div class="case-card"><div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--ink3);margin-bottom:4px;">${i.country}</div><div style="font-size:16px;font-weight:800;margin-bottom:5px;">${i.t}</div><div style="font-size:14px;color:var(--ink2);line-height:1.5;">${i.p}</div></div>`).join('')}`;
+  if(m.type==='diagnosis')return`
+    <div class="spark-bubble"><span class="spark-icon">⚡</span><div class="spark-text">${m.intro}</div></div>
+    <div class="sec-label">🔍 Questions to investigate</div>
+    ${m.qs.map(q=>`<div class="diag-card"><div class="diag-q">${q.q}</div><div class="diag-look"><strong>Look for:</strong> ${q.look}</div><div class="diag-look" style="color:var(--danger);margin-top:4px;"><strong>If it doesn't exist:</strong> ${q.ifnot}</div></div>`).join('')}
+    <div class="sec-label">Common gaps</div>
+    <div class="bad-list">${m.gaps.map(g=>`<div class="mini-item"><span style="color:var(--danger)">✗</span><span>${g}</span></div>`).join('')}</div>
+    <div class="sec-label">Signs of progress</div>
+    <div class="good-list">${m.progress.map(p=>`<div class="mini-item"><span style="color:var(--good)">✓</span><span>${p}</span></div>`).join('')}</div>`;
+  if(m.type==='levers')return`
+    <div class="spark-bubble"><span class="spark-icon">⚡</span><div class="spark-text">${m.intro}</div></div>
+    <div class="warn-box"><span>⚠️</span><span style="font-size:14px;line-height:1.5;">${m.warn}</span></div>
+    <div class="ctx-box"><span>🌍</span><span>${m.ctx}</span></div>
+    ${m.fixes.map(f=>`<div class="fix-card"><div class="fix-badge" style="background:${f.cls}">${f.type}</div><div class="fix-sub">${f.sub}</div><div class="fix-act">${f.act}</div>${f.note?`<div style="font-size:13px;color:var(--ink2);font-style:italic;margin-bottom:8px;">${f.note}</div>`:''}<div class="fix-who"><strong>Who to ask:</strong> ${f.who}</div></div>`).join('')}`;
+  if(m.type==='evidence')return`
+    <div class="spark-bubble"><span class="spark-icon">⚡</span><div class="spark-text">${m.intro}</div></div>
+    <div class="sec-label">📜 International standards to cite</div>
+    ${m.stds.map(s=>`<div class="ev-item"><div class="ev-name">${s.n}</div><div class="ev-desc">${s.d}</div></div>`).join('')}
+    <div class="sec-label">📖 Glossary</div>
+    <div class="card">${m.glos.map(g=>`<div class="glos-item"><div class="glos-term">${g.t}</div><div class="glos-def">${g.d}</div></div>`).join('')}</div>
+    <div class="sec-label">📄 Templates</div>
+    ${m.tpls.map(t=>`<div class="tpl-item"><div class="tpl-title">${t.t}</div><div class="tpl-desc">${t.d}</div></div>`).join('')}`;
+  return'';
+}
+
+function toolsBody(m){
+  const t=S.tool;
+  return`<div class="spark-bubble"><span class="spark-icon">⚡</span><div class="spark-text">${m.intro}</div></div>
+    <div class="ttabs">
+      <div class="ttab${t==='cl'?' act':''}" onclick="switchTool('cl')">✅ Checklist</div>
+      <div class="ttab${t==='dt'?' act':''}" onclick="switchTool('dt')">🌳 What do I do?</div>
+      <div class="ttab${t==='sc'?' act':''}" onclick="switchTool('sc')">💬 What to say</div>
+      <div class="ttab${t==='gl'?' act':''}" onclick="switchTool('gl')">📖 Key words</div>
+    </div>
+    <div id="tc">${toolContent(t)}</div>`;
+}
+
+function toolContent(t){
+  if(t==='cl')return`
+    <div style="font-size:16px;font-weight:800;margin-bottom:4px;">Quick Checklist</div>
+    <div style="font-size:14px;color:var(--ink2);margin-bottom:14px;">Tap to check off. Use this in real time.</div>
+    ${CL_ITEMS.map((item,i)=>`<div class="clitem${S.checks[i]?' chk':''}" onclick="chk(${i})">
+      <div class="chkbox">${S.checks[i]?'✓':''}</div>
+      <div class="cltext">${item}</div>
+    </div>`).join('')}
+    <div style="height:10px;"></div>
+    <button class="btn btn-s btn-sm" onclick="resetCl()">Reset</button>`;
+  if(t==='dt'){
+    const node=DT[S.dtStep];const ans=DTA[S.dtStep];
+    if(ans)return`<div style="font-size:16px;font-weight:800;margin-bottom:14px;">What do I do right now?</div>
+      <div class="dt-ans"><div class="dt-icon">${ans.i}</div><div class="dt-text">${ans.t}</div>
+      <button class="btn btn-p btn-sm" onclick="dtGo('${ans.nx}')">${ans.btn}</button></div>`;
+    return`<div style="font-size:16px;font-weight:800;margin-bottom:14px;">What do I do right now?</div>
+      <div class="dt-node"><div class="dt-q">${node.q}</div>
+      <div class="dt-btns"><button class="dt-btn dt-y" onclick="dtGo('${node.y}')">Yes ✓</button>
+      <button class="dt-btn dt-n" onclick="dtGo('${node.n}')">No ✗</button></div></div>`;
+  }
+  if(t==='sc')return`
+    <div style="font-size:16px;font-weight:800;margin-bottom:4px;">What to say</div>
+    <div style="font-size:14px;color:var(--ink2);margin-bottom:14px;">Exact words. Say them clearly and calmly.</div>
+    ${SCRIPTS.map(s=>`<div class="script-card"><div class="script-lbl">${s.l}</div><div class="script-txt">"${s.t}"</div></div>`).join('')}`;
+  if(t==='gl'){
+    const terms=[{t:"Free legal aid",d:"A free lawyer from the state — when you can't afford one."},{t:"Diversion",d:"Handling your case without going to court — through community support or a programme."},{t:"SOP",d:"Standard Operating Procedure — the written rules officers must follow."},{t:"Pre-trial detention",d:"Being held before a trial. Different from being sentenced."},{t:"Duty lawyer",d:"A lawyer on call at police stations — free of charge."}];
+    return`<div style="font-size:16px;font-weight:800;margin-bottom:4px;">Key words explained</div>
+      <div style="font-size:14px;color:var(--ink2);margin-bottom:14px;">Plain language. No jargon.</div>
+      <div class="card">${terms.map(g=>`<div class="glos-item"><div class="glos-term">${g.t}</div><div class="glos-def">${g.d}</div></div>`).join('')}</div>`;
+  }
+  return'';
+}
+
+// ── PLAN BUILDER ─────────────────────────────────────────────────────────────
+function planPrompt(n){
+  const m=MISSIONS[n];const w=WORLDS[m.w];
+  const loc=[S.answers.country,S.answers.city].filter(Boolean).join(', ');
+  const safetyCtx={very:'The user feels safe to speak up publicly.',some:'The user is somewhat safe but needs to be careful.',care:'CAUTION: The user needs to be cautious — speaking up could have consequences.',risk:'SAFETY PRIORITY: Speaking up could put this user at real risk. Only suggest safe, private, or anonymous actions.'}[S.answers.safety]||'Safety context unknown — be cautious.';
+  const urgencyCtx={now:'Something is happening RIGHT NOW — give immediate practical steps first.',prepare:'Preparing in advance — has time to plan.',support:'Helping someone else — focus on support and accompaniment.',change:'Seeking systemic change — focus on advocacy and coalition-building.'}[S.answers.urgency]||'Not specified.';
+  const elGuides={1:'Help document and respond to a rights violation at first contact.',2:'Help understand which rights apply and build a personal reference for their situation.',3:'Help identify what should have happened and what they can do if it did not.',4:'Help build a personal safety plan — what to say, do, and document.',5:'Help use the checklist, decision tree, and scripts for their specific situation.',6:'Help identify concrete ways to contribute to changing first-contact practices locally.',7:'Help identify the right people and organisations to contact for their situation.',8:'Help understand how their experience compares to documented cases and what to do.',9:'Help create a research plan for investigating first-contact procedures in their context.',10:'Help identify which fix is achievable in their context and build a concrete campaign plan.',11:'Help gather the specific evidence and documentation they need.'};
+  return`You are Spark ⚡ — a warm, direct, knowledgeable guide helping a young person build a personal action plan. You are part of the Toolkit for Change, grounded in the UN Convention on the Rights of the Child (CRC).
+
+MODULE: Module 1 — First Contact
+CURRENT MISSION: Mission ${n} — ${m.name} (${m.sub})
+WORLD: World ${m.w} — ${w.name} (${w.sub})
+USER LOCATION: ${loc||'Not specified'}
+SAFETY LEVEL: ${safetyCtx}
+URGENCY: ${urgencyCtx}
+REASON HERE: ${{myself:'Personally stopped or detained.',support:'Supporting someone else.',prepare:'Preparing in advance.',change:'Driving systemic change.'}[S.answers.reason]||'Not specified.'}
+
+YOUR TASK: ${elGuides[n]||'Build a personalised action plan.'}
+
+${loc?`LOCATION CONTEXT: The user is in ${loc}. Where you know it, reference relevant local laws, organisations, or procedures. If you don't know specifics for this location, acknowledge this honestly and recommend they search for local legal aid organisations or contact UNICEF's country office.`:''}
+
+STYLE:
+- You are Spark — friendly, direct, not preachy
+- Short sentences. Plain language.
+- When using a legal term, explain it simply in brackets: e.g. diversion (handling your case without going to court)
+- Bullet points, not paragraphs
+- Realistic about what's actually possible
+
+PLAN FORMAT:
+**Right now** — 1–3 immediate steps
+**In the next few days** — short-term steps  
+**When you're ready** — longer-term steps
+**Who can help** — specific contacts or types of organisations
+
+RULES:
+1. Never give formal legal advice — always say to seek a real lawyer or advocate
+2. Safety first always — if risk level is cautious or at-risk, flag this and adapt
+3. If the situation is unclear, ask ONE clarifying question before giving the plan
+4. End every plan with: "This is a starting point — a local lawyer or advocate can adapt it to your exact situation."
+5. Keep it real — not everything is possible everywhere`;
+}
+
+function md(text){
+  return text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g,'<em>$1</em>')
+    .replace(/^### (.+)$/gm,'<div style="font-size:14px;font-weight:800;margin:12px 0 4px;">$1</div>')
+    .replace(/^## (.+)$/gm,'<div style="font-size:15px;font-weight:800;margin:14px 0 6px;">$1</div>')
+    .replace(/^# (.+)$/gm,'<div style="font-size:16px;font-weight:800;margin:16px 0 8px;">$1</div>')
+    .replace(/^- (.+)$/gm,'<div style="display:flex;gap:8px;padding:2px 0"><span style="color:var(--w3);flex-shrink:0">•</span><span>$1</span></div>')
+    .replace(/^\d+\. (.+)$/gm,'<div style="display:flex;gap:8px;padding:2px 0"><span style="color:var(--w3);font-weight:700;flex-shrink:0">›</span><span>$1</span></div>')
+    .replace(/\n\n/g,'<div style="height:8px"></div>')
+    .replace(/\n/g,'<br>');
+}
+
+function showPlan(n){
+  const m=MISSIONS[n];const w=WORLDS[m.w];
+  const hist=S.planHistory[n]||[];const loading=S.planLoading;
+  rdr(`<div class="screen">
+    <div class="hdr">
+      <button class="hdr-back" onclick="go('mission',${n})">← ${m.name}</button>
+      <div class="hdr-title">My Plan</div>
+      ${hist.length>0?`<button onclick="clearPlan(${n})" style="background:none;border:none;color:var(--ink3);font-size:13px;cursor:pointer;font-weight:700;">Clear</button>`:''}
+    </div>
+    <div class="plan-ctx">
+      <span>${m.emoji}</span>
+      <span>Plan for: ${m.name}</span>
+    </div>
+    <div class="scroll" id="cs">
+      <div class="pad" id="ca">
+        ${hist.length===0?planStarter(n):chatMsgs(hist)}
+        ${loading?loadingBubble():''}
+      </div>
+      <div class="bottom-safe"></div>
+    </div>
+    ${(hist.length>0&&!loading)?chatBar(n):''}
+  </div>`);
+  setTimeout(()=>{const el=document.getElementById('cs');if(el)el.scrollTop=el.scrollHeight;},150);
+}
+
+function planStarter(n){
+  const m=MISSIONS[n];
+  const starters=(PLAN_STARTERS[n]||PLAN_STARTERS[1]);
+  return`<div style="text-align:center;padding:16px 0 12px;">
+    <div style="font-size:44px;margin-bottom:10px;">⚡</div>
+    <div style="font-size:18px;font-weight:900;margin-bottom:6px;color:var(--ink);">Build your personal plan</div>
+    <div style="font-size:14px;color:var(--ink2);line-height:1.5;">Tell Spark what's going on and get a step-by-step plan for <strong>${m.name.toLowerCase()}</strong>.</div>
+  </div>
+  <div class="card" style="margin-bottom:12px;">
+    <div style="font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:8px;">What's your situation?</div>
+    <textarea id="fmsg" rows="3" placeholder="Describe what happened or what you're preparing for..."
+      style="width:100%;padding:12px;border:2px solid var(--border);border-radius:var(--r-sm);font-size:15px;font-family:inherit;resize:none;line-height:1.5;outline:none;transition:border-color .15s;background:var(--bg);"
+      onfocus="this.style.borderColor='var(--w3)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+    <div style="height:10px;"></div>
+    <button class="btn btn-spark" onclick="sendFirst(${n})">Build my plan →</button>
+  </div>
+  <div style="font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--ink3);margin-bottom:8px;">Or pick a starter</div>
+  ${starters.map(s=>`<div class="starter-chip" onclick="fillStart('${s.replace(/'/g,"\\'")}')">💬 ${s}</div>`).join('')}
+  <div style="font-size:12px;color:var(--ink3);text-align:center;margin-top:12px;">Your conversation is not stored beyond this session.</div>`;
+}
+
+function fillStart(t){const ta=document.getElementById('fmsg');if(ta){ta.value=t;ta.focus();}}
+
+function chatMsgs(hist){
+  return hist.map(m=>m.role==='user'
+    ?`<div class="chat-user"><div class="bubble-user">${m.content.replace(/</g,'&lt;')}</div></div>`
+    :`<div class="chat-spark"><div class="spark-av">⚡</div><div class="bubble-spark">${md(m.content)}</div></div>`
+  ).join('');
+}
+
+function loadingBubble(){
+  return`<div class="chat-spark"><div class="spark-av">⚡</div>
+    <div class="bubble-spark"><div class="loading-dots">
+      <span class="dot-pulse" style="animation:pulse .9s ease-in-out infinite;"></span>
+      <span class="dot-pulse" style="animation:pulse .9s ease-in-out .25s infinite;"></span>
+      <span class="dot-pulse" style="animation:pulse .9s ease-in-out .5s infinite;"></span>
+    </div></div></div>`;
+}
+
+function chatBar(n){
+  return`<div class="chat-input-bar">
+    <textarea id="cinput" rows="1" placeholder="Ask a follow-up or refine your plan..."
+      class="chat-ta"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg(${n});}"
+      oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,90)+'px'"></textarea>
+    <button class="send-btn" onclick="sendMsg(${n})">↑</button>
+  </div>`;
+}
+
+async function sendFirst(n){
+  const ta=document.getElementById('fmsg');if(!ta)return;
+  const msg=ta.value.trim();if(!msg){ta.style.borderColor='var(--danger)';ta.focus();return;}
+  if(!S.planHistory[n])S.planHistory[n]=[];
+  S.planHistory[n].push({role:'user',content:msg});
+  S.planLoading=true;showPlan(n);await runPlan(n);
+}
+async function sendMsg(n){
+  const ta=document.getElementById('cinput');if(!ta)return;
+  const msg=ta.value.trim();if(!msg)return;
+  S.planHistory[n].push({role:'user',content:msg});
+  S.planLoading=true;showPlan(n);await runPlan(n);
+}
+async function runPlan(n){
+  try{
+    const resp=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:planPrompt(n),
+        messages:S.planHistory[n].map(m=>({role:m.role,content:m.content}))})
+    });
+    if(!resp.ok)throw new Error(resp.status);
+    const data=await resp.json();
+    S.planHistory[n].push({role:'assistant',content:data.content[0].text});
+  }catch(e){
+    S.planHistory[n].push({role:'assistant',content:"Something went wrong — please try again. Check your internet connection and try once more."});
+  }
+  S.planLoading=false;showPlan(n);
+}
+function clearPlan(n){S.planHistory[n]=[];showPlan(n);}
+
+// ── NAV ───────────────────────────────────────────────────────────────────────
+function go(screen,param){
+  S.screen=screen;
+  if(screen==='welcome')showWelcome();
+  else if(screen==='ob'){S.step=0;S.answers={};S.profile=null;showOB();}
+  else if(screen==='profile')showProfile();
+  else if(screen==='worlds')showWorlds();
+  else if(screen==='world'){S.world=param;showWorld(param);}
+  else if(screen==='mission'){S.mission=param;S.dtStep='q1';showMission(param);}
+  else if(screen==='plan'){showPlan(param);}
+}
+function pick(id,val){S.answers[id]=val;showOB();}
+function pickCountry(c){S.answers.country=c;const i=document.getElementById('country-in');if(i)i.value=c;showOB();}
+function obNext(){
+  if(S.step<OB.length-1){S.step++;showOB();}
+  else{S.profile=buildProfile(S.answers);go('profile');}
+}
+function switchTool(t){S.tool=t;showMission(S.mission);}
+function chk(i){S.checks[i]=!S.checks[i];showMission(S.mission);}
+function resetCl(){S.checks={};showMission(S.mission);}
+function dtGo(step){S.dtStep=step;showMission(S.mission);}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+showWelcome();
+</script>
+</body>
+</html>
